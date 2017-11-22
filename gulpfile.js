@@ -1,7 +1,9 @@
 var gulp = require('gulp');
 const {execFile} = require('child_process');
+const {spawn} = require('child_process');
 
 gulp.task('default', ['watch-restart', 'killall-processing', 'start-processing', 'move-processing-window']);
+
 
 // Utility tasks
 // -------------
@@ -11,11 +13,13 @@ gulp.task('watch-restart', () => {
 
 gulp.task('start-processing', ['killall-processing'], (end) => {
     // Make sure start-processing.sh is executable
-    execFile('./scripts/start-processing.sh'), (err, stdout) => {
-        if (err) {
-            // console.log(err);
-        }
-    };
+    var processing = spawn('./scripts/start-processing.sh');
+    processing.stdout.on('data', function(data) {
+        console.log(data.toString());
+    });
+    processing.stderr.on('data', function(data) {
+        console.log(data.toString());
+    });
     end(); // Finish the task here, not in the callback of execFile, because processing-java keeps running while the Processing application is open. So the task would never finish with end in the callback
 });
 
@@ -39,5 +43,5 @@ gulp.task('move-processing-window', (end) => {
             }
             end();
         });
-    }, 2800); // Make sure to use a time just longer than what it takes to kill and restart the Processing app
+    }, 5000); // Make sure to use a time just longer than what it takes to kill and restart the Processing app
 });
