@@ -119,12 +119,12 @@ public class RenderBase {
     boolean hasRenderingStarted = false;
 
     RenderBase(PApplet applet, String path) {
-        if (!path.endsWith("/")) {
-            path += "/";
+        if (!path.endsWith(java.io.File.separator)) {
+            path += java.io.File.separator;
         }
         this.path = path;
         today = getTimeStamp();
-        baseRenderPath = path + today + "/";
+        baseRenderPath = path + today + java.io.File.separator;
         runId = getRunId();
     }
 

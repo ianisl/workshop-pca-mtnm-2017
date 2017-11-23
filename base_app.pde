@@ -33,7 +33,7 @@ boolean isRefreshingBackground = true;
 
 void setup() {
     size(800, 800, P2D);
-    render = new Render(this, sketchPath() + "/_ Exports");
+    render = new Render(this, sketchPath() + java.io.File.separator + "_ Exports");
     drawMargin = 40;
     initSwarm();
     initControlP5();
