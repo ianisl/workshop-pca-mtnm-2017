@@ -11,7 +11,7 @@ void initControlP5() {
     cp5.addSlider("attractorPerc", 0.0, 1.0).setLabel("[R] Attractor %").linebreak();
     cp5.addSlider("minInitRadius", 0, swarm.getBounds()[0]/2.0).setLabel("[R] Min Init Radius").linebreak();
     cp5.addSlider("maxInitRadius", 0, swarm.getBounds()[0]/2.0).setLabel("[R] Max Init Radius").linebreak();
-    cp5.addToggle("isRefreshingBackground").setLabel("Auto Refresh Background").linebreak();
+    cp5.addToggle("isRefreshingBackground").setLabel("Auto Clear Background").linebreak();
     cp5.addSlider("backgroundColorR", 0, 255).setLabel("Background R").linebreak();
     cp5.addSlider("backgroundColorG", 0, 255).setLabel("Background G").linebreak();
     cp5.addSlider("backgroundColorB", 0, 255).setLabel("Background B").linebreak();
@@ -33,8 +33,12 @@ void initControlP5() {
     cp5.addSlider("trailColorG", 0, 255).setLabel("Trail G").linebreak();
     cp5.addSlider("trailColorB", 0, 255).setLabel("Trail B").linebreak();
     cp5.addSlider("trailColorAlpha", 0, 255).setLabel("Trail A").linebreak();
-    cp5.addSlider("trailWeight", 1, 10).setLabel("[!] Trail Size").linebreak();
-    cp5.addSlider("trailSize", 0, 1000).setLabel("Trail length").linebreak();
+    cp5.addSlider("trailWeight", 1, 10).setLabel("[!] Trail Width").linebreak();
+    cp5.addSlider("trailSize", 0, 1000).setLabel("Trail Length").linebreak();
+    cp5.addTextlabel("label1").setText("PRESS SPACE TO TOGGLE ANIMATION").setPosition(6, 620).linebreak();
+    cp5.addTextlabel("label2").setText("                B TO CLEAR BACKGROUND").setPosition(6, 637).linebreak();
+    cp5.addTextlabel("label3").setText("                H TO HIDE PANEL").setPosition(6, 654).linebreak();
+    cp5.addTextlabel("label4").setText("                S TO SAVE IMAGE").setPosition(6, 671).linebreak();
 }
 
 void controlEvent(ControlEvent event) {
