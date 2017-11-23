@@ -1,21 +1,13 @@
 class AgentAttractor extends Agent {
 
-    float strength;
-
-    AgentAttractor() {
-        super();
-    }
-
-    AgentAttractor(Swarm swarm, float strength) {
+    AgentAttractor(Swarm swarm) {
         super(swarm);
-        this.strength = strength;
-        println(strength);
     }
 
     void draw() {
         noStroke();
-        fill(255, 0, 0);
-        ellipse(x, y, 5, 5);
+        fill(attractorColorR, attractorColorG, attractorColorB, attractorColorA);
+        ellipse(x, y, attractorDrawSize, attractorDrawSize);
     }
 
     float[] computeAttraction() {

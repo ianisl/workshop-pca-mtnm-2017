@@ -8,65 +8,48 @@ class Swarm {
 
     List<Agent> agents;
     List<AgentAttractor> agentAttractors;
-    float separation, alignment, cohesion;
-    float separationRange, alignmentRange, cohesionRange;
+    float separation, alignment, cohesion, attraction;
+    float separationRange, alignmentRange, cohesionRange, attractionMinRange, attractionMaxRange;
     float maxTurn, maxSpeed, maxForce;
     float minX, minY, maxX, maxY, minZ, maxZ, boundsWidth, boundsHeight, boundsDepth;
     SwarmBoundMode boundMode;
     boolean isContrainedZ;
     float zConstraint;
+    float stepSize;
 
     Swarm() {
         agents = new ArrayList<Agent>();
         agentAttractors = new ArrayList<AgentAttractor>();
         // Defaults
         boundMode = SwarmBoundMode.CLAMP;
-        separation = 55.0;
-        alignment = 12.0;
-        cohesion = 7.0;
-        separationRange = 50.0;
-        alignmentRange = 100.0;
-        cohesionRange = 75.0;
-        maxSpeed = 2.;
-        maxForce = 10000.0;
+        stepSize = 1;
+        separation = 55;
+        alignment = 12;
+        cohesion = 7;
+        attraction = 40;
+        separationRange = 50;
+        alignmentRange = 100;
+        cohesionRange = 75;
+        attractionMinRange = 1;
+        attractionMaxRange = 100;
+        maxSpeed = 2;
+        maxForce = 10000;
         isContrainedZ = false;
         zConstraint = 0;
-        setBounds(Float.NEGATIVE_INFINITY, Float.NEGATIVE_INFINITY, Float.NEGATIVE_INFINITY, Float.POSITIVE_INFINITY, Float.POSITIVE_INFINITY, 99999999);
-    }
-
-    float[] getRandomPos(float minR, float maxR) {
-        float[] pos = new float[3];
-        float r = random(minR, maxR);
-        float theta = random(TAU);
-        float phi = random(TAU);
-        pos[0] = r * sin(theta) * cos(phi);
-        pos[1] = r * sin(theta) * sin(phi);
-        pos[2] = r * cos(theta);
-        return pos;
-    }
-
-    Swarm constrainZ(float z) {
-        isContrainedZ = true;
-        zConstraint = z;
-        // Update existing agents
-        for (Agent b : agents) {
-            b.z = z;
-            b.isContrainedZ = true;
-        }
-        return this;
+        setBounds(Float.NEGATIVE_INFINITY, Float.NEGATIVE_INFINITY, Float.NEGATIVE_INFINITY, Float.POSITIVE_INFINITY, Float.POSITIVE_INFINITY, Float.POSITIVE_INFINITY);
     }
 
     void add(float x, float y, float z) {
-        Agent b = new Agent(this);
+        Agent a = new Agent(this);
         z = isContrainedZ ? zConstraint : z;
-        b.isContrainedZ = isContrainedZ;
-        b.setPos(x, y, z);
-        agents.add(b);
+        a.setZConstraintFlag(isContrainedZ);
+        a.setPos(x, y, z);
+        agents.add(a);
     }
 
     void add(float x, float y, float z, float minR, float maxR) {
         float[] pos = getRandomPos(minR, maxR);
-        add(x + pos[0], x + pos[1], x + pos[2]);
+        add(x + pos[0], y + pos[1], z + pos[2]);
     }
 
     void add(float x, float y, float z, float maxR) {
@@ -83,39 +66,43 @@ class Swarm {
         add(count, x, y, z, 0, maxR);
     }
 
-    void addAgentAttractor(float x, float y, float z, float strength) {
-        AgentAttractor b = new AgentAttractor(this, strength);
+    void addAgentAttractor(float x, float y, float z) {
+        AgentAttractor a = new AgentAttractor(this);
         z = isContrainedZ ? zConstraint : z;
-        b.isContrainedZ = isContrainedZ;
-        b.setPos(x, y, z);
-        agents.add(b);
-        agentAttractors.add(b); // Keep track of all attractors
+        a.isContrainedZ = isContrainedZ;
+        a.setPos(x, y, z);
+        agents.add(a);
+        agentAttractors.add(a); // Keep track of all attractors
     }
 
-    void addAgentAttractor(float x, float y, float z, float strength, float minR, float maxR) {
+    void addAgentAttractor(float x, float y, float z, float minR, float maxR) {
         float[] pos = getRandomPos(minR, maxR);
-        addAgentAttractor(x + pos[0], x + pos[1], x + pos[2], strength);
+        addAgentAttractor(x + pos[0], y + pos[1], z + pos[2]);
     }
 
-    void addAgentAttractor(float x, float y, float z, float strength, float maxR) {
-        addAgentAttractor(x, y, z, strength, 0, maxR);
+    void addAgentAttractor(float x, float y, float z, float maxR) {
+        addAgentAttractor(x, y, z, 0, maxR);
     }
 
-    void addAgentAttractor(int count, float x, float y, float z, float strength, float minR, float maxR) {
+    void addAgentAttractor(int count, float x, float y, float z, float minR, float maxR) {
         for (int i = 0; i < count; ++i) {
-            addAgentAttractor(x, y, z, strength, minR, maxR);
+            addAgentAttractor(x, y, z, minR, maxR);
         }
     }
 
-    void addAgentAttractor(int count, float x, float y, float z, float strength, float maxR) {
-        addAgentAttractor(count, x, y, z, strength, 0, maxR);
+    void addAgentAttractor(int count, float x, float y, float z, float maxR) {
+        addAgentAttractor(count, x, y, z, 0, maxR);
     }
 
     void remove(int i) {
         agents.remove(i);
     }
 
-    Swarm setBounds(float minx, float miny, float minz, float maxx, float maxy, float maxz) {
+    float[] getBounds() {
+        return new float[] {boundsWidth, boundsHeight, boundsDepth};
+    }
+
+    void setBounds(float minx, float miny, float minz, float maxx, float maxy, float maxz) {
         minX = minx;
         minY = miny;
         maxX = maxx;
@@ -125,12 +112,11 @@ class Swarm {
         boundsWidth = maxX - minX;
         boundsHeight = maxY - minY;
         boundsDepth = maxZ - minZ;
-        return this;
     }
 
-    void update(float amount) {
-        for (Agent b : agents) {
-            b.update(amount);
+    void update() {
+        for (Agent a : agents) {
+            a.update(stepSize);
         }
     }
 
@@ -143,8 +129,20 @@ class Swarm {
     }
 
     void drawAgents() {
-        for (Agent b : agents) {
-            b.draw();
+        for (Agent a : agents) {
+            a.draw();
+        }
+    }
+
+    void setTrailSize(int i) {
+        for (Agent a : agents) {
+            a.setTrailSize(i);
+        }
+    }
+
+    void drawTrails() {
+        for (Agent a : agents) {
+            a.drawTrail();
         }
     }
 
@@ -152,9 +150,38 @@ class Swarm {
         this.boundMode = m;
     }
 
+    float[] getRandomPos(float minR, float maxR) {
+        float[] pos = new float[3];
+        float r = random(minR, maxR);
+        float theta = random(TAU);
+        float phi = random(TAU);
+        if (!isContrainedZ) {
+            pos[0] = r * sin(theta) * cos(phi);
+            pos[1] = r * sin(theta) * sin(phi);
+            pos[2] = r * cos(theta);
+        } else {
+            pos[0] = r * cos(theta);
+            pos[1] = r * sin(theta);
+            pos[2] = zConstraint;
+        }
+        return pos;
+    }
+
+    void constrainZ(float z) {
+        // Needs to be called before adding agents if using the minR, maxR method, otherwise those radius won't be respected as agents will be created on a sphere, and projected to the plane.
+        isContrainedZ = true;
+        zConstraint = z;
+        // Update existing agents
+        for (Agent a : agents) {
+            a.z = z;
+            a.isContrainedZ = true;
+        }
+    }
+
 }
 
 enum SwarmBoundMode {
+    NONE,
     CLAMP,
     WRAP
 }

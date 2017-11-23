@@ -8,7 +8,7 @@ gulp.task('default', ['watch-restart', 'killall-processing', 'start-processing',
 // Utility tasks
 // -------------
 gulp.task('watch-restart', () => {
-    return gulp.watch(['*.pde'], ['killall-processing', 'start-processing', 'move-processing-window']);
+    return gulp.watch(['base_app.pde'], ['killall-processing', 'start-processing', 'move-processing-window']);
 });
 
 gulp.task('start-processing', ['killall-processing'], (end) => {

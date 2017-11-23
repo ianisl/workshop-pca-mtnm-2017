@@ -12,6 +12,7 @@ public class Render extends RenderBase {
     boolean isRenderingPdf = false;
     boolean hasRenderingStarted = false;
     String renderer;
+    String filePathWithoutExtension;
 
     Render(PApplet applet, String path) {
         super(applet, path);
@@ -23,18 +24,15 @@ public class Render extends RenderBase {
     void pre() {
         // The following code will be called just before the main applet's draw method
         if (isRenderingPdf || isRenderingJpg) {
-            String filePathWithoutExtension = baseRenderPath + today + "-" + runId + "-" + renderId;
+            filePathWithoutExtension = baseRenderPath + today + "-" + runId + "-" + renderId;
             if (isRenderingPdf) {
                 if (renderer.equals("processing.awt.PGraphicsJava2D") || renderer.equals("processing.opengl.PGraphics2D")) {
                     beginRecord(PDF, filePathWithoutExtension + ".pdf");
                 } else if (renderer.equals(P3D)) {
-                    println("Saved PDF.");
                     beginRaw(PDF, filePathWithoutExtension + ".pdf");
                 }
             }
             hasRenderingStarted = true;
-            println("Saved JPG.");
-            save(filePathWithoutExtension + ".jpg");
         }
     }
 
@@ -49,9 +47,12 @@ public class Render extends RenderBase {
                 } else if (renderer.equals(P3D)) {
                     endRaw();
                 }
+                println("Saved PDF.");
                 isRenderingPdf = false;
             }
             if (isRenderingJpg) {
+                save(filePathWithoutExtension + ".jpg");
+                println("Saved JPG.");
                 isRenderingJpg = false;
             }
             hasRenderingStarted = false;
@@ -70,6 +71,10 @@ public class Render extends RenderBase {
 
     void renderJpg() {
         isRenderingJpg = true;
+    }
+
+    boolean isRendering () {
+        return isRenderingJpg || isRenderingPdf;
     }
 
     boolean isRenderingPdf() {
