@@ -8,7 +8,6 @@ class Swarm {
 
     List<Agent> agents;
     List<AgentAttractor> agentAttractors;
-    float separation, alignment, cohesion, attraction;
     float separationRange, alignmentRange, cohesionRange, attractionMinRange, attractionMaxRange;
     float maxTurn, maxSpeed, maxForce;
     float minX, minY, maxX, maxY, minZ, maxZ, boundsWidth, boundsHeight, boundsDepth;
@@ -23,10 +22,6 @@ class Swarm {
         // Defaults
         boundMode = SwarmBoundMode.CLAMP;
         stepSize = 1;
-        separation = 55;
-        alignment = 12;
-        cohesion = 7;
-        attraction = 40;
         separationRange = 50;
         alignmentRange = 100;
         cohesionRange = 75;

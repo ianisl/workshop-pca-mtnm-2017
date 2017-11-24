@@ -179,7 +179,7 @@ class Agent {
             float dLength = mag(dx, dy, dz);
             if (dLength > 1e-7) {
                 if (dLength > swarm.attractionMinRange && dLength < swarm.attractionMaxRange) {
-                    float strengthNorm = swarm.attraction / dLength;
+                    float strengthNorm = attraction / dLength;
                     dx *= strengthNorm;
                     dy *= strengthNorm;
                     dz *= strengthNorm;
@@ -229,19 +229,19 @@ class Agent {
             }
         }
         if (countSep > 0) {
-            float separationNorm = swarm.separation / (float) countSep;
+            float separationNorm = separation / (float) countSep;
             sep[0] *= separationNorm;
             sep[1] *= separationNorm;
             sep[2] *= separationNorm;
         }
         if (countAli > 0) {
-            float alignmentNorm = swarm.alignment / (float) countAli;
+            float alignmentNorm = alignment / (float) countAli;
             ali[0] *= alignmentNorm;
             ali[1] *= alignmentNorm;
             ali[2] *= alignmentNorm;
         }
         if (countCoh > 0) {
-            float cohesionNorm = swarm.cohesion / (float) countCoh;
+            float cohesionNorm = cohesion / (float) countCoh;
             coh[0] *= cohesionNorm;
             coh[1] *= cohesionNorm;
             coh[2] *= cohesionNorm;
